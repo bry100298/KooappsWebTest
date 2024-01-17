@@ -10,13 +10,23 @@ class DBConnect {
 
     private function connect() {
         try {
-            $dbPath = __DIR__ . '/mydatabase.db'; // Adjust the path to your database file
-            $this->db = new SQLite3($dbPath);
+            $databaseFilePath = __DIR__ . DIRECTORY_SEPARATOR . 'mydatabase.db';
+
+            // Create the database file if it doesn't exist
+            if (!file_exists($databaseFilePath)) {
+                $this->db = new SQLite3($databaseFilePath);
+                $this->createTable(); // Create the table if the file is new
+                echo 'Database file created in the api folder.';
+            } else {
+                $this->db = new SQLite3($databaseFilePath);
+                echo 'Connected to the database.';
+            }
+
             if (!$this->db) {
                 throw new Exception('Failed to connect to the database.');
             }
         } catch (Exception $e) {
-            die($e->getMessage());
+            die('Error: ' . $e->getMessage());
         }
     }
 
@@ -35,4 +45,5 @@ class DBConnect {
         $this->db->exec($query);
     }
 }
+
 ?>

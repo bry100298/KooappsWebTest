@@ -10,8 +10,7 @@ class DBConnect {
 
     private function connect() {
         try {
-            $dbPath = __DIR__ . '/mydatabase.db'; // Adjust the path to your database file
-            $this->db = new SQLite3($dbPath);
+            $this->db = new SQLite3('./mydatabase.db'); // Change './mydatabase.db' to your desired SQLite database file path
             if (!$this->db) {
                 throw new Exception('Failed to connect to the database.');
             }
@@ -35,4 +34,5 @@ class DBConnect {
         $this->db->exec($query);
     }
 }
+
 ?>
