@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const MyPage = () => {
   const [formData, setFormData] = useState({
@@ -6,6 +7,8 @@ const MyPage = () => {
     b: '',
     c: '',
   });
+
+  const [tableData, setTableData] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,10 +19,29 @@ const MyPage = () => {
   };
 
   const submitForm = () => {
-    // Add your logic for form submission here
-    // For now, let's just log the form data to the console
-    console.log('Form Data:', formData);
+    axios.post('/api/index.php', formData)
+      .then(response => {
+        console.log(response.data.message);
+        fetchTableData(); // Refresh table data after submission
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
+
+  const fetchTableData = () => {
+    axios.get('/api/index.php')
+      .then(response => {
+        setTableData(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    fetchTableData(); // Fetch initial table data on component mount
+  }, []);
 
   return (
     <div>
@@ -59,7 +81,26 @@ const MyPage = () => {
         </button>
       </form>
 
-      <div id="response"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Integer a</th>
+            <th>Integer b</th>
+            <th>String c</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tableData.map(row => (
+            <tr key={row.id}>
+              <td>{row.id}</td>
+              <td>{row.a}</td>
+              <td>{row.b}</td>
+              <td>{row.c}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
